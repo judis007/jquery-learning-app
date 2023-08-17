@@ -2,17 +2,25 @@ $(function(){
   $("#form").submit(function(event){
     event.preventDefault();
 
-    item = $(".item-input").val();
-    quantity = $(".quantity-input").val();
-    unit = $(".select-class").val();
+    formData = $(this).serializeArray()
 
-    let itemError = validateItems(item);
-    let quantityError = validateQuantity(quantity);
-    let unitError = validateUnit(unit);
+    let itemError = false;
+    let quantityError = false;
+    let unitError = false;
 
-    if (!itemError && !quantityError && !unitError) {
-      addTableRows(item, quantity, unit);
-    }
+    $.each(formData, function(index, element){
+      switch(index){
+      case 0:
+        itemError = validateItems(element.value);
+        break;
+      case 1:
+        quantityError = validateQuantity(element.value);
+        break;
+      case 2:
+        unitError = validateUnit(element.value);
+        break;
+      }
+    })
 
     $(".clear-all").click(function(){
       $('.table').find('tbody').empty()
@@ -23,6 +31,10 @@ $(function(){
       $(".quantity-input").val("");
       $(".select-class").val("");
     })
+
+    if (!itemError && !quantityError && !unitError) {
+        addTableRows(formData[0].value, formData[1].value, formData[2].value);
+    }
   })
 
   function validateItems(item){
